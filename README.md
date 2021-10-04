@@ -1,1 +1,5 @@
-# gepitanulas-nagyhazi
+# Gépitanulás házi feladat
+
+---
+
+## Feladat leírása
