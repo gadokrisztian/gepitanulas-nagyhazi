@@ -13,7 +13,7 @@ class WareHouseBase(metaclass=ABCMeta):
         self.s = np.array([[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
                            [1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
                            [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                           [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
                            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                            [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
                            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
@@ -34,24 +34,26 @@ class WareHouseBase(metaclass=ABCMeta):
         plt.plot([-cw / 2, -cw / 2], [-ch / 2, -ch / 2 + self._h], 'b-', lw=2, zorder=10)
         plt.plot([-cw / 2 + self._w, -cw / 2 + self._w], [-ch / 2, -ch / 2 + self._h], 'b-', lw=2, zorder=10)
 
-        # x0 = i // self._h
-        # y0 = i % self._h
-        # ax.scatter(x0, y0, c='red')
-
         for j in range(self._h):
             for i in range(self._w):
                 n0 = i + j * self._w
                 ax.text(i, j, n0)
 
-                try:
-                    if not self.s[n0, n0 + 1]:
-                        ax.plot([i + cw / 2, i + cw / 2], [j - ch / 2, j + ch / 2], 'k-')
+                # right wall
+                if not  self[i, j, i + 1, j]:
+                    ax.plot([i + cw / 2, i + cw / 2], [j - ch / 2, j + ch / 2], 'k-')
 
-                    if not self.s[n0, n0 + self._w]:
-                        ax.plot([i - cw / 2, i + cw / 2], [j + ch / 2, j + ch / 2], 'k-')
+                # left wall
+                if not  self[i, j, i - 1, j]:
+                    ax.plot([i - cw / 2, i - cw / 2], [j - ch / 2, j + ch / 2], 'k-')
 
-                except IndexError:
-                    continue
+                # ceiling wall
+                if not  self[i, j, i, j + 1]:
+                    ax.plot([i - cw / 2, i + cw / 2], [j + ch / 2, j + ch / 2], 'k-')
+
+                # floor wall
+                if not self[i, j, i, j - 1]:
+                    ax.plot([i - cw / 2, i + cw / 2], [j - ch / 2, j - ch / 2], 'k-')
 
         ax.text(self._w - 1, self._h - 1, self._N - 1)
         ax.axis('equal')
@@ -86,5 +88,4 @@ class WareHouseBase(metaclass=ABCMeta):
 if __name__ == "__main__":
     w = WareHouseBase(4, 3)
     w.render()
-    # plt.show()
-    print(w[0, 1, 1, 1])
+    plt.show()
