@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod
 import matplotlib.pyplot as plt
 import numpy as np
 
+from whouserobot import Dir
+
 
 class WareHouseBase(metaclass=ABCMeta):
     """
@@ -156,3 +158,25 @@ class RandomWareHouse(WareHouseBase):
         """
         self.s = np.random.choice([0, 1], p=(0.12, 0.88), size=(self._N, self._N))
         self.s = (self.s + self.s.T) // 2
+
+
+if __name__ == "__main__":
+    w = RandomWareHouse(4, 3)
+    w.s = np.array(
+        [
+            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+            [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+        ]
+    )
+    ax = w.render()
+    plt.savefig(Dir.MEDIA / "example_warehouse.png", dpi=450)

@@ -11,3 +11,7 @@
 ---
 
 ## Feladat leírása
+
+## Példaraktár
+
+![](media/example_warehouse.png)
