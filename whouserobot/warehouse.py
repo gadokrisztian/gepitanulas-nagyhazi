@@ -32,7 +32,7 @@ class WareHouseBase(metaclass=ABCMeta):
         self._w = width
         self._h = height
         self._N = self._w * self._h
-        self.s = np.zeros((self._N, self._N))
+        self.s = [[0 for _ in range(self._N)] for _ in range(self._N)]
 
     @abstractmethod
     def generate(self):
@@ -105,6 +105,23 @@ class WareHouseBase(metaclass=ABCMeta):
         # TODO: fill this
         return True
 
+    def coord2state(self, i: int, j: int):
+        # TODO: check for i,j inrange
+        return i + j * self._w
+
+    def state2coord(self, si: int):
+        assert si > -1
+        assert si < self._N
+        row = si % self._w
+        col = (si - row) // self._w
+        return row, col
+
+    def check_coord(self, i: int, j: int):
+        inrangex = lambda x: (x > -1) and (x < self._w)
+        inrangey = lambda y: (y > -1) and (y < self._h)
+
+        return inrangex(i) and inrangey(j)
+
     def __getitem__(self, idx):
         """
         Check if cell (i,j) and (k,l) are connected.
@@ -118,13 +135,10 @@ class WareHouseBase(metaclass=ABCMeta):
         """
         i, j, k, l = idx
 
-        inrangex = lambda x: (x > -1) and (x < self._w)
-        inrangey = lambda y: (y > -1) and (y < self._h)
-
-        if inrangex(i) and inrangey(j) and inrangex(k) and inrangey(l):
-            s1 = i + j * self._w
-            s2 = k + l * self._w
-            return self.s[s1][s2]
+        if self.check_coord(i, j) and self.check_coord(k, l):
+            row = self.coord2state(i, j)
+            col = self.coord2state(k, l)
+            return self.s[row][col]
         else:
             return 0
 
@@ -136,14 +150,31 @@ class WareHouseBase(metaclass=ABCMeta):
 
         i, j, k, l = idx
 
-        inrangex = lambda x: (x > -1) and (x < self._w)
-        inrangey = lambda y: (y > -1) and (y < self._h)
-        index_checks = [inrangex(i), inrangey(j), inrangex(k), inrangey(l)]
-
-        if all(index_checks):
-            row = i + j * self._w
-            col = k + l * self._w
+        if self.check_coord(i, j) and self.check_coord(k, l):
+            row = self.coord2state(i, j)
+            col = self.coord2state(k, l)
             self.s[row][col] = value
+
+
+class ExampleWarehouse(WareHouseBase):
+    def __init__(self):
+        super().__init__(4, 3)
+
+    def generate(self):
+        self.s = [
+            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+            [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+        ]
 
 
 class RandomWareHouse(WareHouseBase):
@@ -161,22 +192,6 @@ class RandomWareHouse(WareHouseBase):
 
 
 if __name__ == "__main__":
-    w = RandomWareHouse(4, 3)
-    w.s = np.array(
-        [
-            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
-            [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-        ]
-    )
+    w = ExampleWarehouse()
     ax = w.render()
     plt.savefig(Dir.MEDIA / "example_warehouse.png", dpi=450)
