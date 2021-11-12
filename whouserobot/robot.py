@@ -1,20 +1,34 @@
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
 from whouserobot import WareHouseBase
 
 
-class Robot(metaclass=ABCMeta):
+class RobotBase(metaclass=ABCMeta):
     def __init__(self, warehouse: WareHouseBase):
-        warehouse.generate()
+        self.whouse = warehouse
+        self.whouse.generate()
+        self._N = self.whouse._N
+
+    @abstractmethod
+    def get_route(self, from_: int, to_: int):
+        ...
+
+    def render_route(self, path):
+        ...
+
+
+class QLRobot(RobotBase):
+    def __init__(self, warehouse: WareHouseBase, **kwargs):
+        super().__init__(warehouse)
+
         self.R = np.array(warehouse.s)
-        self._N = self.R.shape[0]
         self.Q = np.zeros((self._N, self._N))
 
-        self.gamma = 0.75
-        self.alpha = 0.9
-        self.niter = 1000
+        self.gamma = kwargs.get("gamma", 0.75)
+        self.alpha = kwargs.get("alpha", 0.9)
+        self.niter = kwargs.get("niter", 1000)
 
         self.current_goal = 0
 
@@ -28,9 +42,9 @@ class Robot(metaclass=ABCMeta):
                     playable_actions.append(j)
 
             next_state = np.random.choice(playable_actions)
-            TD = (
-                self.R[current_state, next_state]
-                + self.gamma
+            TD = self.R[current_state, next_state]
+            TD += (
+                self.gamma
                 * self.Q[
                     next_state,
                     np.argmax(
@@ -39,8 +53,9 @@ class Robot(metaclass=ABCMeta):
                         ]
                     ),
                 ]
-                - self.Q[current_state, next_state]
             )
+            TD -= self.Q[current_state, next_state]
+
             self.Q[current_state, next_state] += self.alpha * TD
 
     def get_route(self, from_: int, to_: int):
@@ -62,12 +77,9 @@ class Robot(metaclass=ABCMeta):
 
         print(route)
 
-    def render_route(self, path):
-        ...
-
 
 if __name__ == "__main__":
     from whouserobot import ExampleWarehouse
 
-    r = Robot(ExampleWarehouse())
+    r = QLRobot(ExampleWarehouse())
     r.get_route(0, 10)
