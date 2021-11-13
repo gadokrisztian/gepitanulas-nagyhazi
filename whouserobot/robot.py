@@ -9,7 +9,7 @@ class RobotBase(metaclass=ABCMeta):
     def __init__(self, warehouse: WareHouseBase):
         self.whouse = warehouse
         self.whouse.generate()
-        self._N = self.whouse._N
+        self._N = len(self.whouse)
 
     @abstractmethod
     def get_route(self, from_: int, to_: int):
