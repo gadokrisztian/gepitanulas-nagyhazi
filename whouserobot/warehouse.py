@@ -3,7 +3,6 @@ from abc import ABCMeta, abstractmethod
 
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.core.fromnumeric import prod
 
 from whouserobot import Dir
 
@@ -131,10 +130,13 @@ class RandomWareHouse(WareHouseBase):
         """
         self.s = np.random.choice([0, 1], p=(0.12, 0.88), size=(self._N, self._N))
         self.s = (self.s + self.s.T) // 2
+        self.s = self.s.astype(int)
 
 
 if __name__ == "__main__":
+    np.random.seed(4812)
     w = ExampleWarehouse()
+    w = RandomWareHouse(10, 10)
     w.generate()
     ax = w.render()
     plt.show()

@@ -1,8 +1,10 @@
 from abc import ABCMeta, abstractmethod
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from whouserobot import WareHouseBase
+from whouserobot.warehouse import RandomWareHouse, pairwise
 
 
 class RobotBase(metaclass=ABCMeta):
@@ -16,7 +18,22 @@ class RobotBase(metaclass=ABCMeta):
         ...
 
     def render_route(self, path):
-        ...
+        ax = self.whouse.render()
+
+        i, j = self.whouse.state2coord(path[0])
+        ax.scatter(i + 0.1, j - 0.1, c="red", s=250, zorder=100, label=f"Start: {path[0]}")
+
+        i, j = self.whouse.state2coord(path[-1])
+        ax.scatter(i + 0.1, j - 0.1, c="green", s=250, zorder=100, label=f"End: {path[-1]}")
+
+        for si, sj in pairwise(path):
+            i, j = self.whouse.state2coord(si)
+            k, l = self.whouse.state2coord(sj)
+
+            plt.plot([i + 0.1, k + 0.1], [j - 0.1, l - 0.1], color="purple", lw=5)
+
+        # plt.legend()
+        plt.show()
 
 
 class QLRobot(RobotBase):
@@ -76,10 +93,16 @@ class QLRobot(RobotBase):
             from_ = next_location
 
         print(route)
+        return route
 
 
 if __name__ == "__main__":
-    from whouserobot import ExampleWarehouse
+    from numpy.random import seed
 
-    r = QLRobot(ExampleWarehouse())
-    r.get_route(0, 10)
+    from whouserobot import ExampleWarehouse, RandomWareHouse
+
+    seed(4812)
+    # r = QLRobot(ExampleWarehouse())
+    r = QLRobot(RandomWareHouse(5, 5), niter=10)
+    route = r.get_route(0, 10)
+    r.render_route(route)
