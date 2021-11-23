@@ -8,6 +8,7 @@ def test_routing():
 
 
 def test_render_route():
+    # It's enough if the render method does not raise any exception
     r = QLRobot(ExampleWarehouse())
     route = r.get_route(4, 10)
     ax = r.render_route(route)

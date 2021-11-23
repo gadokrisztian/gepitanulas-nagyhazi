@@ -1,4 +1,3 @@
-import itertools as it
 from abc import ABCMeta, abstractmethod
 
 import matplotlib.pyplot as plt
@@ -8,6 +7,10 @@ from whouserobot import Dir
 
 
 class WareHouseBase(metaclass=ABCMeta):
+    """
+    This class contains the structure of the warehouse.
+    """
+
     def __init__(self, width: int, height: int):
         """
         Initialize the warehouse with it's dimensions.
@@ -21,10 +24,15 @@ class WareHouseBase(metaclass=ABCMeta):
         self._w = width
         self._h = height
         self._N = self._w * self._h
+
+        # state matrix
         self.s = np.zeros((self._N, self._N), dtype=int)
 
     @abstractmethod
     def generate(self):
+        """
+        Every warehouse class should have a generate method where the state matrix is going to be populated.
+        """
         ...
 
     def render(self):
@@ -60,12 +68,14 @@ class WareHouseBase(metaclass=ABCMeta):
                 if not self.s[si, si + self._w]:
                     drawline(i - cw / 2, j + ch / 2, i + cw / 2, j + ch / 2)
 
+        i, j = self.state2coord(si+1)
+        ax.text(i, j, si+1, horizontalalignment="center", verticalalignment="center")
         ax.axis("equal")
         ax.set_xticks(range(self._w))
         ax.set_yticks(range(self._h))
         return ax
 
-    def validate_states(self):
+    def validate_states( self):
         """
         Check if a state matrix is valid. Should be symmetric and only
         neighbouring tiles can be connected. Also the robot should be able to
@@ -75,17 +85,29 @@ class WareHouseBase(metaclass=ABCMeta):
         # TODO: fill this
         return True
 
-    def coord2state(self, i: int, j: int):
+    def coord2state(self, i: int,j: int):
+        """
+        This method maps the i,j coordinates of the warehouse to a state.
+        """
         return i + j * self._w
 
-    def state2coord(self, si: int):
+    def state2coord(self,si: int):
+        """
+        This function maps an integer state to the coordinates of the warehouse.
+        """
         assert si > -1
         assert si < self._N
         row = si % self._w
         col = (si - row) // self._w
-        return row, col
+        return (
+            row,
+            col,
+        )
 
     def __len__(self):
+        """
+        This method gives back the number of states.
+        """
         return self._N
 
 
@@ -117,5 +139,5 @@ if __name__ == "__main__":
     w = ExampleWarehouse()
     w.generate()
     ax = w.render()
-    plt.savefig(Dir.MEDIA / "example_warehouse.png", dpi=330)
+    plt.savefig(Dir.MEDIA / "example_warehouse.png",dpi=330)
     plt.show()

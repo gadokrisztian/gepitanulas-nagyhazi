@@ -60,7 +60,7 @@ def test_state2coord(w):
 
 
 def test_render(w):
+    # It's enough if the render method does not raise any exception
     w.generate()
     ax = w.render()
-    # TODO: place some test here
     assert True

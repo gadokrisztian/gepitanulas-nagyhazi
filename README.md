@@ -27,3 +27,18 @@ Robot a `4`-es pozícióban van és a `10` helyre kell mennie felvenni az árut:
 ```
 
 ![](media/example_route.png)
+
+```python
+>>> route = r.get_route(10, 11)
+>>> [10, 6, 7, 11]
+```
+
+![](media/example_route2.png)
+
+
+```python
+>>> route = r.get_route(3, 8)
+>>> [10, 6, 7, 11]
+```
+
+![](media/example_route3.png)
