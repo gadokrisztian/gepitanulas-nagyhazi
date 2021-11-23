@@ -21,7 +21,8 @@ A raraktár:
 
 Robot a `4`-es pozícióban van és a `10` helyre kell mennie felvenni az árut:
 ```python
->>> route = r.get_route(0, 10)
+>>> r = QLRobot(ExampleWarehouse())
+>>> route = r.get_route(4, 10)
 >>> [4, 0, 1, 5, 9, 10]
 ```
 
