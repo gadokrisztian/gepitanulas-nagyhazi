@@ -13,6 +13,16 @@
 
 ## Feladat leírása
 
-## Példaraktár
+## Példa a működésre
+
+A raraktár:
 
 ![](media/example_warehouse.png)
+
+Robot a `4`-es pozícióban van és a `10` helyre kell mennie felvenni az árut:
+```python
+>>> route = r.get_route(0, 10)
+>>> [4, 0, 1, 5, 9, 10]
+```
+
+![](media/example_route.png)

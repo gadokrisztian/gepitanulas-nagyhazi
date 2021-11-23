@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from whouserobot import ExampleWarehouse, RandomWareHouse, WareHouseBase
+from whouserobot import ExampleWarehouse, WareHouseBase
 
 
 @pytest.fixture
@@ -59,43 +59,8 @@ def test_state2coord(w):
     assert equaliterable(w.state2coord(11), (3, 2))
 
 
-def test_getitem(w):
-    tiles2idx = lambda s1, s2: (*w.state2coord(s1), *w.state2coord(s2))
-    assert w[tiles2idx(4, 5)] == 0
-    assert w[tiles2idx(5, 6)] == 0
-    assert w[tiles2idx(5, 1)] == 1
-    assert w[tiles2idx(5, 9)] == 1
-    assert w[tiles2idx(1, 9)] == 0
-    assert w[tiles2idx(1, 5)] == 1
-    assert w[tiles2idx(1, 11)] == 0
-    # false index
-    assert w[-100, 100, 400, 400] == 0
-
-
-def test_setitem(w):
-
-    tile1 = w.state2coord(1)
-    tile5 = w.state2coord(5)
-    idx = (*tile1, *tile5)
-
-    assert w[idx] == 1
-
-    w[idx] = 0
-
-    assert w[idx] == 0
-
-
 def test_render(w):
     w.generate()
     ax = w.render()
     # TODO: place some test here
     assert True
-
-
-def test_random_warehouse():
-
-    w = RandomWareHouse(10, 2)
-    w.generate()
-    s0 = w.s.copy()
-    s0 = (s0 + s0.T) // 2
-    assert np.all(s0 == w.s)

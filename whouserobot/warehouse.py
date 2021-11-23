@@ -7,12 +7,6 @@ import numpy as np
 from whouserobot import Dir
 
 
-def pairwise(iterable):
-    a, b = it.tee(iterable)
-    next(b, None)
-    return zip(a, b)
-
-
 class WareHouseBase(metaclass=ABCMeta):
     def __init__(self, width: int, height: int):
         """
@@ -118,26 +112,10 @@ class ExampleWarehouse(WareHouseBase):
         )
 
 
-class RandomWareHouse(WareHouseBase):
-    """
-    This is a random layout generator, it will certainly generate a layout that
-    is not fully connected.
-    """
-
-    def generate(self):
-        """
-        Generate a random symmetric matrix.
-        """
-        self.s = np.random.choice([0, 1], p=(0.12, 0.88), size=(self._N, self._N))
-        self.s = (self.s + self.s.T) // 2
-        self.s = self.s.astype(int)
-
-
 if __name__ == "__main__":
     np.random.seed(4812)
     w = ExampleWarehouse()
-    w = RandomWareHouse(10, 10)
     w.generate()
     ax = w.render()
+    plt.savefig(Dir.MEDIA / "example_warehouse.png", dpi=330)
     plt.show()
-    plt.savefig(Dir.MEDIA / "example_warehouse.png", dpi=450)

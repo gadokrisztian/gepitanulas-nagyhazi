@@ -3,8 +3,8 @@ from abc import ABCMeta, abstractmethod
 import matplotlib.pyplot as plt
 import numpy as np
 
-from whouserobot import WareHouseBase
-from whouserobot.warehouse import RandomWareHouse, pairwise
+from whouserobot import Dir, WareHouseBase
+from whouserobot.warehouse import ExampleWarehouse, pairwise
 
 
 class RobotBase(metaclass=ABCMeta):
@@ -33,7 +33,8 @@ class RobotBase(metaclass=ABCMeta):
             plt.plot([i + 0.1, k + 0.1], [j - 0.1, l - 0.1], color="purple", lw=5)
 
         # plt.legend()
-        plt.show()
+        # plt.show()
+        return ax
 
 
 class QLRobot(RobotBase):
@@ -59,9 +60,9 @@ class QLRobot(RobotBase):
                     playable_actions.append(j)
 
             next_state = np.random.choice(playable_actions)
-            TD = self.R[current_state, next_state]
-            TD += (
-                self.gamma
+            TD = (
+                self.R[current_state, next_state]
+                + self.gamma
                 * self.Q[
                     next_state,
                     np.argmax(
@@ -70,9 +71,8 @@ class QLRobot(RobotBase):
                         ]
                     ),
                 ]
+                - self.Q[current_state, next_state]
             )
-            TD -= self.Q[current_state, next_state]
-
             self.Q[current_state, next_state] += self.alpha * TD
 
     def get_route(self, from_: int, to_: int):
@@ -97,12 +97,12 @@ class QLRobot(RobotBase):
 
 
 if __name__ == "__main__":
-    from numpy.random import seed
 
-    from whouserobot import ExampleWarehouse, RandomWareHouse
+    from whouserobot import ExampleWarehouse
 
-    seed(4812)
     # r = QLRobot(ExampleWarehouse())
-    r = QLRobot(RandomWareHouse(5, 5), niter=10)
-    route = r.get_route(0, 10)
+    r = QLRobot(ExampleWarehouse())
+    route = r.get_route(4, 10)
     r.render_route(route)
+    plt.savefig(Dir.MEDIA / "example_route.png", dpi=330)
+    plt.show()
