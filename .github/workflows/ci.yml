@@ -15,12 +15,6 @@ jobs:
         python: [3.9]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install GMSH
-        run: |
-          sudo apt-get install gmsh
-      - uses: actions/checkout@v2.3.5
-        with:
-          fetch-depth: 0
       - name: Setup Python ${{ matrix.python }}
         uses: actions/setup-python@v2.2.2
         with:
