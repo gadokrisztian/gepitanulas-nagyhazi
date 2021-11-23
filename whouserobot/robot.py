@@ -28,11 +28,7 @@ class RobotBase(metaclass=ABCMeta):
         self._N = len(self.whouse)
 
     @abstractmethod
-    def get_route(
-        self,
-        from_: int,
-        to_: int,
-    ):
+    def get_route(self, from_: int, to_: int):
         """
         This is the method that calculates the route between 2 tiles. All subclass should
         implement this method.
