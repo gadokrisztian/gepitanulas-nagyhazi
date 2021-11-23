@@ -1,11 +1,10 @@
-
-from whouserobot import QLRobot, ExampleWarehouse
+from whouserobot import ExampleWarehouse, QLRobot
 
 
 def test_routing():
     r = QLRobot(ExampleWarehouse())
     route = r.get_route(4, 10)
-    assert all(ri==rj for ri, rj in zip(route, [4, 0, 1, 5, 9, 10]))
+    assert all(ri == rj for ri, rj in zip(route, [4, 0, 1, 5, 9, 10]))
 
 
 def test_render_route():

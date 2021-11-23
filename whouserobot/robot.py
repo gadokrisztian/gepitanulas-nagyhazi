@@ -1,15 +1,17 @@
 from abc import ABCMeta, abstractmethod
+from itertools import tee
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from whouserobot import Dir, WareHouseBase
-from itertools import tee
+
 
 def pairwise(iterable):
     a, b = tee(iterable)
     next(b, None)
     return zip(a, b)
+
 
 class RobotBase(metaclass=ABCMeta):
     def __init__(self, warehouse: WareHouseBase):
