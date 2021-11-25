@@ -53,6 +53,7 @@ class RobotBase(metaclass=ABCMeta):
 
             plt.plot([i + 0.1, k + 0.1], [j - 0.1, l - 0.1], color="purple", lw=5)
 
+        plt.tight_layout()
         # plt.legend()
         # plt.show()
         return ax
@@ -124,10 +125,11 @@ class QLRobot(RobotBase):
 
 
 if __name__ == "__main__":
-    from whouserobot import ExampleWarehouse
+    from whouserobot.warehouse import ExampleWarehouse, RandomWarehouse
 
-    r = QLRobot(ExampleWarehouse())
-    route = r.get_route(3, 8)
+    w = RandomWarehouse(10, 10, seed=65, walls=50)
+    r = QLRobot(w, niter=10_000)
+    route = r.get_route(9, 72)
     r.render_route(route)
-    plt.savefig(Dir.MEDIA / "example_route3.png", dpi=330)
+    plt.savefig(Dir.MEDIA / "example_route5.png", dpi=450)
     plt.show()

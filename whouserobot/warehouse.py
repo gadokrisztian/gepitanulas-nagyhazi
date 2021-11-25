@@ -1,9 +1,9 @@
 from abc import ABCMeta, abstractmethod
+from random import choices, seed
 
 import matplotlib.pyplot as plt
+import networkx as nx
 import numpy as np
-
-from whouserobot import Dir
 
 
 class WareHouseBase(metaclass=ABCMeta):
@@ -26,14 +26,22 @@ class WareHouseBase(metaclass=ABCMeta):
         self._N = self._w * self._h
 
         # state matrix
-        self.s = np.zeros((self._N, self._N), dtype=int)
+        self._init_warehouse()
 
     @abstractmethod
-    def generate(self):
+    def generate(self, **kwargs):
         """
         Every warehouse class should have a generate method where the state matrix is going to be populated.
         """
         ...
+
+    def _init_warehouse(self):
+        """
+        Initialize the warehouse with no walls between any tiles. This by generating a
+        von Neuman grid graph and turning it into an adjacency matrix.
+        """
+        G = nx.grid_graph(dim=(self._w, self._h))
+        self.s = nx.adjacency_matrix(G).todense()
 
     def render(self):
         """
@@ -42,7 +50,7 @@ class WareHouseBase(metaclass=ABCMeta):
         :return: ax
         """
         # create the figure
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(10, 8))
 
         # cell width and cell height
         cw = 1
@@ -75,16 +83,6 @@ class WareHouseBase(metaclass=ABCMeta):
         ax.set_yticks(range(self._h))
         return ax
 
-    def validate_states(self):
-        """
-        Check if a state matrix is valid. Should be symmetric and only
-        neighbouring tiles can be connected. Also the robot should be able to
-        travel from any tile to any other tile, therefore no isolated tile
-        can exist.
-        """
-        # TODO: fill this
-        return True
-
     def coord2state(self, i: int, j: int):
         """
         This method maps the i,j coordinates of the warehouse to a state.
@@ -99,10 +97,7 @@ class WareHouseBase(metaclass=ABCMeta):
         assert si < self._N
         row = si % self._w
         col = (si - row) // self._w
-        return (
-            row,
-            col,
-        )
+        return row, col
 
     def __len__(self):
         """
@@ -134,10 +129,52 @@ class ExampleWarehouse(WareHouseBase):
         )
 
 
+class RandomWarehouse(WareHouseBase):
+    """
+    This is a simple implementation of a random warehouse. The generated
+    warehouse will have random walls, but it is ensured that any tile can be
+    reached from any other tile.
+    """
+
+    def __init__(self, width: int, height: int, **kwargs):
+        super().__init__(width, height)
+        self.nb_walls = kwargs.get("walls", 2)
+        self.seed = kwargs.get("seed", 4812)
+
+    def generate(self):
+        """
+        This method generates a random warehouse. Be careful it can stuck in an infinite loop if
+        the number of walls is too high. In this case try to lower the number of walls or
+        use an another seed for the random generator.
+
+        Parameters:
+            walls: The number of walls
+            seed: seed value for the random generator
+
+        """
+
+        seed(self.seed)
+
+        G = nx.grid_graph(dim=(self._w, self._h))
+
+        while self.nb_walls:
+            u, v = choices(tuple(G.nodes), k=2)
+            if G.has_edge(u, v):
+                G.remove_edge(u, v)
+                if nx.is_connected(G):
+                    self.nb_walls -= 1
+                else:
+                    G.add_edge(u, v)
+
+        self.s = nx.adjacency_matrix(G).todense()
+
+
 if __name__ == "__main__":
-    np.random.seed(4812)
-    w = ExampleWarehouse()
+    from whouserobot import Dir
+
+    w = RandomWarehouse(3, 3, seed=65, walls=4)
+    # w = ExampleWarehouse()
     w.generate()
     ax = w.render()
-    plt.savefig(Dir.MEDIA / "example_warehouse.png", dpi=330)
+    # plt.savefig(Dir.MEDIA / "example_warehouse.png", dpi=330)
     plt.show()

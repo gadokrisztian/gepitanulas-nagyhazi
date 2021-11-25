@@ -42,3 +42,23 @@ Robot a `4`-es pozícióban van és a `10` helyre kell mennie felvenni az árut:
 ```
 
 ![](media/example_route3.png)
+
+## Generált raktár
+
+```python
+>>> w = RandomWarehouse(10, 5, seed=65, walls=25)
+>>> r = QLRobot(w, niter=10_000)
+>>> route = r.get_route(3, 38)
+>>> [3, 2, 12, 22, 32, 33, 34, 35, 36, 37, 47, 48, 49, 39, 38]
+```
+
+![](media/example_route4.png)
+
+```python
+>>> w = RandomWarehouse(10, 10, seed=65, walls=50)
+>>> r = QLRobot(w, niter=10_000)
+>>> route = r.get_route(9, 72)
+>>> [3, 2, 12, 22, 32, 33, 34, 35, 36, 37, 47, 48, 49, 39, 38]
+```
+
+![](media/example_route5.png)
