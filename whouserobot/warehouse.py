@@ -169,12 +169,12 @@ class RandomWarehouse(WareHouseBase):
         self.s = nx.adjacency_matrix(G).todense()
 
 
-if __name__ == "__main__":
-    from whouserobot import Dir
+# if __name__ == "__main__":
+#     from whouserobot import Dir
 
-    w = RandomWarehouse(3, 3, seed=65, walls=4)
-    # w = ExampleWarehouse()
-    w.generate()
-    ax = w.render()
-    # plt.savefig(Dir.MEDIA / "example_warehouse.png", dpi=330)
-    plt.show()
+#     w = RandomWarehouse(3, 3, seed=65, walls=4)
+#     # w = ExampleWarehouse()
+#     w.generate()
+#     ax = w.render()
+#     # plt.savefig(Dir.MEDIA / "example_warehouse.png", dpi=330)
+#     plt.show()

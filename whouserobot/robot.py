@@ -124,12 +124,12 @@ class QLRobot(RobotBase):
         return route
 
 
-if __name__ == "__main__":
-    from whouserobot.warehouse import ExampleWarehouse, RandomWarehouse
+# if __name__ == "__main__":
+#     from whouserobot.warehouse import ExampleWarehouse, RandomWarehouse
 
-    w = RandomWarehouse(10, 10, seed=65, walls=50)
-    r = QLRobot(w, niter=10_000)
-    route = r.get_route(9, 72)
-    r.render_route(route)
-    plt.savefig(Dir.MEDIA / "example_route5.png", dpi=450)
-    plt.show()
+#     w = RandomWarehouse(10, 10, seed=65, walls=50)
+#     r = QLRobot(w, niter=10_000)
+#     route = r.get_route(9, 72)
+#     r.render_route(route)
+#     plt.savefig(Dir.MEDIA / "example_route5.png", dpi=450)
+#     plt.show()
